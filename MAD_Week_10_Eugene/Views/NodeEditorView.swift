@@ -21,7 +21,7 @@ struct NodeEditorView: View {
         self.storyId = storyId
         self.adminViewModel = adminViewModel
         _viewModel = StateObject(wrappedValue: StoryNodeViewModel(
-            parentStoryId: storyId,
+            storyId: storyId,
             existingNode: existingNode,
             availableNodes: availableNodes
         ))
