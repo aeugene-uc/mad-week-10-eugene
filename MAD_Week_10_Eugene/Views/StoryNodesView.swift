@@ -41,7 +41,7 @@ struct StoryNodesView: View {
         }
         .sheet(isPresented: $showAddNode) {
             if let storyId = story.id {
-                NodeEditorView(parentStoryId: storyId,
+                NodeEditorView(storyId: storyId,
                                 existingNode: nil,
                                 availableNodes: viewModel.nodes,
                                 adminViewModel: viewModel)
@@ -49,7 +49,7 @@ struct StoryNodesView: View {
         }
         .sheet(item: $editingNode) { node in
             if let storyId = story.id {
-                NodeEditorView(parentStoryId: storyId,
+                NodeEditorView(storyId: storyId,
                                 existingNode: node,
                                 availableNodes: viewModel.nodes,
                                 adminViewModel: viewModel)
