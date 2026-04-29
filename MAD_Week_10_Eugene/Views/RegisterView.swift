@@ -29,8 +29,8 @@ struct RegisterView: View {
             .padding(.horizontal, 24)
             
             VStack(spacing: 16) {
-                AppTextFieldView(placeholder: "Name", text: $name, autocapitalization: .words)
-                AppTextFieldView(placeholder: "Email", text: $email, keyboardType: .emailAddress)
+                AppTextFieldView(placeholder: "Name", text: $userName, autocapitalization: .words)
+                AppTextFieldView(placeholder: "Email", text: $userEmail, keyboardType: .emailAddress)
                 AppTextFieldView(placeholder: "Password", text: $password, isSecure: true)
             }
             .padding(.horizontal, 24)
@@ -42,11 +42,11 @@ struct RegisterView: View {
                     .padding(.horizontal, 24)
             }
             
-            PrimaryButtonView(storyTitle: "Register",
+            PrimaryButtonView(text: "Register",
                           isLoading: authViewModel.isLoading,
                           isEnabled: isFormValid) {
                 Task {
-                    await authViewModel.register(userName: name, userEmail: email, password: password)
+                    await authViewModel.register(userName: userName, userEmail: userEmail, password: password)
                 }
             }
             .padding(.horizontal, 80)
@@ -65,6 +65,6 @@ struct RegisterView: View {
     }
     
     private var isFormValid: Bool {
-        !name.isEmpty && !email.isEmpty && password.count >= 6
+        !userName.isEmpty && !userEmail.isEmpty && password.count >= 6
     }
 }

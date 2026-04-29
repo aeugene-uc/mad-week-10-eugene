@@ -43,7 +43,7 @@ struct ProfileView: View {
     
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            SectionHeaderView(storyTitle: "Achievements")
+            SectionHeaderView(text: "Achievements")
             ForEach(viewModel.achievements(for: authViewModel.currentUser)) { achievement in
                 AchievementRowView(achievement: achievement)
             }
@@ -52,7 +52,7 @@ struct ProfileView: View {
     
     private var seedDataSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            SectionHeaderView(storyTitle: "Seed Data")
+            SectionHeaderView(text: "Seed Data")
             ForEach(viewModel.seedCategories) { seed in
                 SeedDataRowView(seed: seed,
                             isLoading: seedingId == seed.id) {

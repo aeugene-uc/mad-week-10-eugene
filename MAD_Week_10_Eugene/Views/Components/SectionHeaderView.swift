@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct SectionHeaderView: View {
-    let storyTitle: String
+    let text: String
     
     var body: some View {
-        Text(title)
+        Text(text)
             .font(.system(size: 13, weight: .bold))
             .foregroundColor(.primary)
             .frame(maxWidth: .infinity, alignment: .leading)

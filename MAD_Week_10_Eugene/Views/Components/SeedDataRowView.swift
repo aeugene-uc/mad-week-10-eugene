@@ -16,10 +16,10 @@ struct SeedDataRowView: View {
         Button(action: action) {
             HStack {
                 VStack(alignment: .leading, spacing: 7) {
-                    Text(seed.storyTitle)
+                    Text(seed.catTitle)
                         .font(.system(size: 15, weight: .semibold))
                         .foregroundColor(.primary)
-                    Text(seed.storyDesc)
+                    Text(seed.catDesc)
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.leading)

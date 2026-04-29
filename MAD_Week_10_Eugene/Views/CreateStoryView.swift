@@ -21,7 +21,7 @@ struct CreateStoryView: View {
                 AppTextFieldView(placeholder: "Deskripsi", text: $description, autocapitalization: .sentences)
                 AppTextFieldView(placeholder: "Kategori (opsional)", text: $category)
                 
-                PrimaryButtonView(storyTitle: "Simpan Cerita",
+                PrimaryButtonView(text: "Simpan Cerita",
                               isEnabled: !title.isEmpty && !description.isEmpty) {
                     Task {
                         _ = await viewModel.createStory(storyTitle: title,

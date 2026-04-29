@@ -21,7 +21,7 @@ struct NodeEditorView: View {
         self.storyId = storyId
         self.adminViewModel = adminViewModel
         _viewModel = StateObject(wrappedValue: StoryNodeViewModel(
-            storyId: storyId,
+            parentStoryId: storyId,
             existingNode: existingNode,
             availableNodes: availableNodes
         ))
@@ -68,7 +68,7 @@ struct NodeEditorView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Simpan") {
                         Task {
-                            await adminViewModel.saveNode(storyId: storyId,
+                            await adminViewModel.saveNode(parentStoryId: storyId,
                                                           node: viewModel.buildNode())
                             dismiss()
                         }

@@ -33,7 +33,7 @@ struct LoginView: View {
                 
                 VStack(spacing: 16) {
                     AppTextFieldView(placeholder: "Email",
-                                 text: $email,
+                                 text: $userEmail,
                                  keyboardType: .emailAddress)
                     
                     AppTextFieldView(placeholder: "Password",
@@ -49,11 +49,11 @@ struct LoginView: View {
                         .padding(.horizontal, 24)
                 }
                 
-                PrimaryButtonView(storyTitle: "Login",
+                PrimaryButtonView(text: "Login",
                               isLoading: authViewModel.isLoading,
                               isEnabled: isFormValid) {
                     Task {
-                        await authViewModel.login(userEmail: email, password: password)
+                        await authViewModel.login(userEmail: userEmail, password: password)
                     }
                 }
                 .padding(.horizontal, 80)
@@ -75,6 +75,6 @@ struct LoginView: View {
     }
     
     private var isFormValid: Bool {
-        !email.isEmpty && !password.isEmpty
+        !userEmail.isEmpty && !password.isEmpty
     }
 }

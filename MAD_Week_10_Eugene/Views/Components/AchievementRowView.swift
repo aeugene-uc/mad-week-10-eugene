@@ -22,10 +22,10 @@ struct AchievementRowView: View {
             }
             
             VStack(alignment: .leading, spacing: 7) {
-                Text(achievement.storyTitle)
+                Text(achievement.achievementTitle)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(achievement.hasUnlocked ? .primary : .secondary)
-                Text(achievement.storyDesc)
+                Text(achievement.achievementDesc)
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)
             }

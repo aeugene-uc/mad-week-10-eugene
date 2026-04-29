@@ -36,7 +36,7 @@ struct GameplayView: View {
         .onChange(of: viewModel.isFinished) { _, finished in
             if finished, let storyId = viewModel.storyId {
                 Task {
-                    await authViewModel.markStoryCompleted(storyId: storyId)
+                    await authViewModel.markStoryCompleted(parentStoryId: storyId)
                 }
             }
         }
@@ -99,7 +99,7 @@ struct GameplayView: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
                 
-                PrimaryButtonView(storyTitle: "Kembali ke Home") {
+                PrimaryButtonView(text: "Kembali ke Home") {
                     dismiss()
                 }
                 .padding(.horizontal, 40)

@@ -41,10 +41,10 @@ class AdminViewModel: ObservableObject {
         storiesListener = nil
     }
     
-    func startListeningNodes(storyId: String) {
+    func startListeningNodes(parentStoryId: String) {
         nodesListener?.remove()
         nodesListener = db.collection("stories")
-            .document(storyId)
+            .document(parentStoryId)
             .collection("nodes")
             .order(by: "createdAt", descending: false)
             .addSnapshotListener { [weak self] snapshot, error in
@@ -68,7 +68,7 @@ class AdminViewModel: ObservableObject {
     
     func createStory(storyTitle: String, storyDesc: String, storyCategory: String = "general") async -> Story? {
         do {
-            let newStory = Story(storyTitle: title, storyDesc: description, storyCategory: category)
+            let newStory = Story(storyTitle: storyTitle, storyDesc: storyDesc, storyCategory: storyCategory)
             let ref = try db.collection("stories").addDocument(from: newStory)
             var saved = newStory
             saved.id = ref.documentID
@@ -79,34 +79,34 @@ class AdminViewModel: ObservableObject {
         }
     }
     
-    func saveNode(storyId: String, node: StoryNode) async {
+    func saveNode(parentStoryId: String, node: StoryNode) async {
         isLoading = true
         do {
             if node.isStart {
-                try await clearOtherEntryPoints(storyId: storyId, exceptNodeId: node.id)
+                try await clearOtherEntryPoints(parentStoryId: parentStoryId, exceptNodeId: node.id)
             }
             
             if let nodeId = node.id, !nodeId.isEmpty {
                 try db.collection("stories")
-                    .document(storyId)
+                    .document(parentStoryId)
                     .collection("nodes")
                     .document(nodeId)
                     .setData(from: node)
                 
                 if node.isStart {
                     try await db.collection("stories")
-                        .document(storyId)
+                        .document(parentStoryId)
                         .updateData(["entryNodeId": nodeId])
                 }
             } else {
                 let ref = try db.collection("stories")
-                    .document(storyId)
+                    .document(parentStoryId)
                     .collection("nodes")
                     .addDocument(from: node)
                 
                 if node.isStart {
                     try await db.collection("stories")
-                        .document(storyId)
+                        .document(parentStoryId)
                         .updateData(["entryNodeId": ref.documentID])
                 }
             }
@@ -116,9 +116,9 @@ class AdminViewModel: ObservableObject {
         isLoading = false
     }
     
-    private func clearOtherEntryPoints(storyId: String, exceptNodeId: String?) async throws {
+    private func clearOtherEntryPoints(parentStoryId: String, exceptNodeId: String?) async throws {
         let snapshot = try await db.collection("stories")
-            .document(storyId)
+            .document(parentStoryId)
             .collection("nodes")
             .whereField("isEntryPoint", isEqualTo: true)
             .getDocuments()

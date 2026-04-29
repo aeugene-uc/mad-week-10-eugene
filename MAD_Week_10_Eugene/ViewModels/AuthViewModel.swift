@@ -49,7 +49,7 @@ class AuthViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let result = try await Auth.auth().signIn(withEmail: email, password: password)
+            let result = try await Auth.auth().signIn(withEmail: userEmail, password: password)
             await fetchUserProfile(uid: result.user.uid)
             isAuthenticated = true
         } catch {
@@ -62,8 +62,8 @@ class AuthViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         do {
-            let result = try await Auth.auth().createUser(withEmail: email, password: password)
-            let newUser = User(id: result.user.uid, userName: name, userEmail: email)
+            let result = try await Auth.auth().createUser(withEmail: userEmail, password: password)
+            let newUser = User(id: result.user.uid, userName: userName, userEmail: userEmail)
             try db.collection("users").document(result.user.uid).setData(from: newUser)
             currentUser = newUser
             isAuthenticated = true

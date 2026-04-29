@@ -19,46 +19,46 @@ class ProfileViewModel: ObservableObject {
     
     let seedCategories: [SeedCategory] = [
         SeedCategory(id: "bajak_laut",
-                     storyTitle: "Bajak laut",
-                     storyDesc: "Mulai petualangan mencari harta karun samudra.",
-                     storyCategory: "pirate"),
+                     catTitle: "Bajak laut",
+                     catDesc: "Mulai petualangan mencari harta karun samudra.",
+                     catType: "pirate"),
         SeedCategory(id: "ninja",
-                     storyTitle: "Ninja",
-                     storyDesc: "Mulai perjalanan ninja menembus batas desa.",
-                     storyCategory: "ninja"),
+                     catTitle: "Ninja",
+                     catDesc: "Mulai perjalanan ninja menembus batas desa.",
+                     catType: "ninja"),
         SeedCategory(id: "romance",
-                     storyTitle: "Romance",
-                     storyDesc: "Mulai kisah asmara manis di bawah sakura.",
-                     storyCategory: "romance")
+                     catTitle: "Romance",
+                     catDesc: "Mulai kisah asmara manis di bawah sakura.",
+                     catType: "romance")
     ]
     
     func achievements(for user: User?) -> [Achievement] {
         let completedCount = user?.finishedStories.count ?? 0
         return [
             Achievement(id: "first_step",
-                        storyTitle: "Langkah Awal",
-                        storyDesc: "Satu cerita selesai.",
+                        achievementTitle: "Langkah Awal",
+                        achievementDesc: "Satu cerita selesai.",
                         badgeIcon: "lightbulb.fill",
                         hasUnlocked: completedCount >= 1),
             Achievement(id: "explorer",
-                        storyTitle: "Penjelajah Takdir",
-                        storyDesc: "Tiga cerita selesai.",
+                        achievementTitle: "Penjelajah Takdir",
+                        achievementDesc: "Tiga cerita selesai.",
                         badgeIcon: "map.fill",
                         hasUnlocked: completedCount >= 3),
             Achievement(id: "master",
-                        storyTitle: "Sang Pencatat",
-                        storyDesc: "Lima cerita selesai.",
+                        achievementTitle: "Sang Pencatat",
+                        achievementDesc: "Lima cerita selesai.",
                         badgeIcon: "crown.fill",
                         hasUnlocked: completedCount >= 5)
         ]
     }
     
-    func seed(storyCategory: SeedCategory) async {
+    func seed(category: SeedCategory) async {
         isSeeding = true
         message = nil
         errorMessage = nil
         do {
-            switch category.storyCategory {
+            switch category.catType {
             case "pirate":
                 try await seedPirate()
             case "ninja":
@@ -68,7 +68,7 @@ class ProfileViewModel: ObservableObject {
             default:
                 break
             }
-            message = "\(category.storyTitle) berhasil ditambahkan"
+            message = "\(category.catTitle) berhasil ditambahkan"
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -110,7 +110,7 @@ class ProfileViewModel: ObservableObject {
                 .document()
             idMap[node.id ?? ""] = docRef.documentID
             if node.isStart {
-                entryNodeId = docRef.documentID
+                startNodeId = docRef.documentID
             }
         }
         
@@ -121,7 +121,7 @@ class ProfileViewModel: ObservableObject {
                             optionText: choice.optionText,
                             followingNodeId: idMap[choice.followingNodeId] ?? choice.followingNodeId)
             }
-            var newNode = StoryNode(storyId: storyId,
+            var newNode = StoryNode(parentStoryId: storyId,
                                     storyText: node.storyText,
                                     options: mappedChoices,
                                     isStart: node.isStart,
@@ -135,7 +135,7 @@ class ProfileViewModel: ObservableObject {
                 .setData(from: newNode)
         }
         
-        if let entryId = entryNodeId {
+        if let entryId = startNodeId {
             try await db.collection("stories")
                 .document(storyId)
                 .updateData(["entryNodeId": entryId])
@@ -145,18 +145,18 @@ class ProfileViewModel: ObservableObject {
     private func ninjaNodes() -> [StoryNode] {
         let n1 = "n1", n2 = "n2", n3 = "n3", n4 = "n4", n5 = "n5"
         return [
-            StoryNode(id: n1, storyId: "", storyText: "Ian berlatih di hutan. Ujian ninja tinggal besok pagi. Ian merasa kurang menguasai chakra-nya.",
+            StoryNode(id: n1, parentStoryId: "", storyText: "Ian berlatih di hutan. Ujian ninja tinggal besok pagi. Ian merasa kurang menguasai chakra-nya.",
                      options: [
                         StoryChoice(optionText: "Meditasi Chakra", followingNodeId: n2),
                         StoryChoice(optionText: "Latihan Fisik Keras", followingNodeId: n3)
                      ], isStart: true),
-            StoryNode(id: n2, storyId: "", storyText: "Ian duduk bersila. Aliran chakra-nya menjadi tenang dan stabil. Ia merasakan kekuatan baru.",
+            StoryNode(id: n2, parentStoryId: "", storyText: "Ian duduk bersila. Aliran chakra-nya menjadi tenang dan stabil. Ia merasakan kekuatan baru.",
                      options: [StoryChoice(optionText: "Lanjut ke Ujian", followingNodeId: n4)]),
-            StoryNode(id: n3, storyId: "", storyText: "Ian melatih tubuhnya hingga lelah. Tenaganya bertambah, namun chakranya kacau.",
+            StoryNode(id: n3, parentStoryId: "", storyText: "Ian melatih tubuhnya hingga lelah. Tenaganya bertambah, namun chakranya kacau.",
                      options: [StoryChoice(optionText: "Lanjut ke Ujian", followingNodeId: n5)]),
-            StoryNode(id: n4, storyId: "", storyText: "Ian lulus ujian dengan kontrol chakra sempurna. Ia menjadi ninja desa yang dihormati.",
+            StoryNode(id: n4, parentStoryId: "", storyText: "Ian lulus ujian dengan kontrol chakra sempurna. Ia menjadi ninja desa yang dihormati.",
                      options: [], isEnd: true),
-            StoryNode(id: n5, storyId: "", storyText: "Ian gagal pada teknik akhir. Ia bertekad berlatih lebih giat tahun depan.",
+            StoryNode(id: n5, parentStoryId: "", storyText: "Ian gagal pada teknik akhir. Ia bertekad berlatih lebih giat tahun depan.",
                      options: [], isEnd: true)
         ]
     }
@@ -164,18 +164,18 @@ class ProfileViewModel: ObservableObject {
     private func pirateNodes() -> [StoryNode] {
         let n1 = "n1", n2 = "n2", n3 = "n3", n4 = "n4", n5 = "n5"
         return [
-            StoryNode(id: n1, storyId: "", storyText: "Dylan berdiri di dermaga. Peta harta karun di tangannya. Dua jalur tersedia menuju pulau misteri.",
+            StoryNode(id: n1, parentStoryId: "", storyText: "Dylan berdiri di dermaga. Peta harta karun di tangannya. Dua jalur tersedia menuju pulau misteri.",
                      options: [
                         StoryChoice(optionText: "Lewati Badai Selatan", followingNodeId: n2),
                         StoryChoice(optionText: "Berlayar Tenang ke Utara", followingNodeId: n3)
                      ], isStart: true),
-            StoryNode(id: n2, storyId: "", storyText: "Badai dahsyat menerjang. Dylan dan kru melawan ombak besar dengan keberanian.",
+            StoryNode(id: n2, parentStoryId: "", storyText: "Badai dahsyat menerjang. Dylan dan kru melawan ombak besar dengan keberanian.",
                      options: [StoryChoice(optionText: "Tiba di Pulau", followingNodeId: n4)]),
-            StoryNode(id: n3, storyId: "", storyText: "Pelayaran tenang namun panjang. Persediaan menipis sebelum mereka tiba di pulau.",
+            StoryNode(id: n3, parentStoryId: "", storyText: "Pelayaran tenang namun panjang. Persediaan menipis sebelum mereka tiba di pulau.",
                      options: [StoryChoice(optionText: "Tiba di Pulau", followingNodeId: n5)]),
-            StoryNode(id: n4, storyId: "", storyText: "Dylan menemukan harta karun legendaris. Kru bersorak gembira di bawah matahari.",
+            StoryNode(id: n4, parentStoryId: "", storyText: "Dylan menemukan harta karun legendaris. Kru bersorak gembira di bawah matahari.",
                      options: [], isEnd: true),
-            StoryNode(id: n5, storyId: "", storyText: "Dylan menemukan pulau kosong. Harta sudah lebih dulu diambil bajak laut lain.",
+            StoryNode(id: n5, parentStoryId: "", storyText: "Dylan menemukan pulau kosong. Harta sudah lebih dulu diambil bajak laut lain.",
                      options: [], isEnd: true)
         ]
     }
@@ -183,18 +183,18 @@ class ProfileViewModel: ObservableObject {
     private func romanceNodes() -> [StoryNode] {
         let n1 = "n1", n2 = "n2", n3 = "n3", n4 = "n4", n5 = "n5"
         return [
-            StoryNode(id: n1, storyId: "", storyText: "Gavin berdiri di bawah pohon sakura. Surat cinta di tangannya. Ia harus memilih caranya.",
+            StoryNode(id: n1, parentStoryId: "", storyText: "Gavin berdiri di bawah pohon sakura. Surat cinta di tangannya. Ia harus memilih caranya.",
                      options: [
                         StoryChoice(optionText: "Berikan Langsung", followingNodeId: n2),
                         StoryChoice(optionText: "Titipkan Lewat Teman", followingNodeId: n3)
                      ], isStart: true),
-            StoryNode(id: n2, storyId: "", storyText: "Gavin memberanikan diri. Ia menyerahkan surat sambil tersenyum gugup.",
+            StoryNode(id: n2, parentStoryId: "", storyText: "Gavin memberanikan diri. Ia menyerahkan surat sambil tersenyum gugup.",
                      options: [StoryChoice(optionText: "Tunggu Jawaban", followingNodeId: n4)]),
-            StoryNode(id: n3, storyId: "", storyText: "Surat sampai lewat teman. Namun pesan menjadi kurang personal dan terasa dingin.",
+            StoryNode(id: n3, parentStoryId: "", storyText: "Surat sampai lewat teman. Namun pesan menjadi kurang personal dan terasa dingin.",
                      options: [StoryChoice(optionText: "Tunggu Jawaban", followingNodeId: n5)]),
-            StoryNode(id: n4, storyId: "", storyText: "Ia membaca dengan tersenyum. Mereka berjanji bertemu lagi musim semi berikutnya.",
+            StoryNode(id: n4, parentStoryId: "", storyText: "Ia membaca dengan tersenyum. Mereka berjanji bertemu lagi musim semi berikutnya.",
                      options: [], isEnd: true),
-            StoryNode(id: n5, storyId: "", storyText: "Surat tidak pernah dibalas. Gavin belajar bahwa keberanian memang penting.",
+            StoryNode(id: n5, parentStoryId: "", storyText: "Surat tidak pernah dibalas. Gavin belajar bahwa keberanian memang penting.",
                      options: [], isEnd: true)
         ]
     }

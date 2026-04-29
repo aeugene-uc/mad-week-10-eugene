@@ -33,32 +33,32 @@ class StoryNodeViewModel: ObservableObject {
     }
     
     func addChoice() {
-        choices.append(StoryChoice(optionText: "", followingNodeId: ""))
+        options.append(StoryChoice(optionText: "", followingNodeId: ""))
     }
     
     func removeChoice(at offsets: IndexSet) {
-        choices.remove(atOffsets: offsets)
+        options.remove(atOffsets: offsets)
     }
     
     func updateChoice(id: String, optionText: String? = nil, followingNodeId: String? = nil) {
-        guard let index = choices.firstIndex(where: { $0.id == id }) else { return }
-        if let label { choices[index].optionText = label }
-        if let nextNodeId { choices[index].followingNodeId = nextNodeId }
+        guard let index = options.firstIndex(where: { $0.id == id }) else { return }
+        if let optionText { options[index].optionText = optionText }
+        if let followingNodeId { options[index].followingNodeId = followingNodeId }
     }
     
     func buildNode() -> StoryNode {
         var node = StoryNode(id: existingNode?.id,
-                             storyId: storyId,
-                             storyText: narrative,
-                             options: choices.filter { !$0.optionText.isEmpty && !$0.followingNodeId.isEmpty },
-                             isStart: isEntryPoint,
-                             isEnd: isEnding,
+                             parentStoryId: storyId,
+                             storyText: storyText,
+                             options: options.filter { !$0.optionText.isEmpty && !$0.followingNodeId.isEmpty },
+                             isStart: isStart,
+                             isEnd: isEnd,
                              timestamp: existingNode?.timestamp ?? Date())
         node.id = existingNode?.id
         return node
     }
     
     var isValid: Bool {
-        !narrative.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        !storyText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }

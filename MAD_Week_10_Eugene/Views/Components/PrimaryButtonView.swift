@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PrimaryButtonView: View {
-    let storyTitle: String
+    let text: String
     var isLoading: Bool = false
     var isEnabled: Bool = true
     let action: () -> Void
@@ -21,7 +21,7 @@ struct PrimaryButtonView: View {
                         .progressViewStyle(.circular)
                         .tint(.white)
                 } else {
-                    Text(title)
+                    Text(text)
                         .font(.system(size: 15, weight: .semibold))
                 }
             }
