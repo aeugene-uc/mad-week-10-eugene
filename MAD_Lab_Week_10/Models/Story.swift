@@ -1,0 +1,41 @@
+//
+//  Story.swift
+//  MAD Week 10 Eugene
+//
+//  Created by student on 29/04/26.
+//
+
+import Foundation
+import FirebaseFirestore
+
+struct Story: Identifiable, Codable, Hashable {
+    @DocumentID var id: String?
+    var storyTitle: String
+    var storyDesc: String
+    var storyCategory: String
+    var startNodeId: String?
+    var timestamp: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case storyTitle = "title"
+        case storyDesc = "description"
+        case storyCategory = "category"
+        case startNodeId = "entryNodeId"
+        case timestamp = "createdAt"
+    }
+    
+    init(id: String? = nil,
+         storyTitle: String,
+         storyDesc: String,
+         storyCategory: String = "general",
+         startNodeId: String? = nil,
+         timestamp: Date = Date()) {
+        self.id = id
+        self.storyTitle = storyTitle
+        self.storyDesc = storyDesc
+        self.storyCategory = storyCategory
+        self.startNodeId = startNodeId
+        self.timestamp = timestamp
+    }
+}

@@ -1,0 +1,4 @@
+com.madweek10.eugene
+
+https://github.com/firebase/firebase-ios-sdk
+
