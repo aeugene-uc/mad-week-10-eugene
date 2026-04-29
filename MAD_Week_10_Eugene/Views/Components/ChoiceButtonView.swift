@@ -14,7 +14,7 @@ struct ChoiceButtonView: View {
     var body: some View {
         Button(action: action) {
             HStack {
-                Text(label)
+                Text(optionText)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.white)
                 Spacer()

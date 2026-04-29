@@ -36,7 +36,7 @@ struct GameplayView: View {
         .onChange(of: viewModel.isFinished) { _, finished in
             if finished, let storyId = viewModel.storyId {
                 Task {
-                    await authViewModel.markStoryCompleted(parentStoryId: storyId)
+                    await authViewModel.markStoryCompleted(storyId: storyId)
                 }
             }
         }

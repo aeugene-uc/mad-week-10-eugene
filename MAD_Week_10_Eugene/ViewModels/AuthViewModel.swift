@@ -90,8 +90,8 @@ class AuthViewModel: ObservableObject {
                 currentUser = try snapshot.data(as: User.self)
             } else if let firebaseUser = Auth.auth().currentUser {
                 let fallback = User(id: uid,
-                                       userName: firebaseUser.userEmail ?? "User",
-                                       userEmail: firebaseUser.userEmail ?? "")
+                                       userName: firebaseUser.email ?? "User",
+                                       userEmail: firebaseUser.email ?? "")
                 try db.collection("users").document(uid).setData(from: fallback)
                 currentUser = fallback
             }

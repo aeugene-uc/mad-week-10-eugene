@@ -17,16 +17,16 @@ struct CreateStoryView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                AppTextFieldView(placeholder: "Judul Cerita", text: $title, autocapitalization: .words)
-                AppTextFieldView(placeholder: "Deskripsi", text: $description, autocapitalization: .sentences)
-                AppTextFieldView(placeholder: "Kategori (opsional)", text: $category)
+                AppTextFieldView(placeholder: "Judul Cerita", text: $storyTitle, autocapitalization: .words)
+                AppTextFieldView(placeholder: "Deskripsi", text: $storyDesc, autocapitalization: .sentences)
+                AppTextFieldView(placeholder: "Kategori (opsional)", text: $storyCategory)
                 
                 PrimaryButtonView(text: "Simpan Cerita",
-                              isEnabled: !title.isEmpty && !description.isEmpty) {
+                              isEnabled: !storyTitle.isEmpty && !storyDesc.isEmpty) {
                     Task {
-                        _ = await viewModel.createStory(storyTitle: title,
-                                                        storyDesc: description,
-                                                        storyCategory: category)
+                        _ = await viewModel.createStory(storyTitle: storyTitle,
+                                                        storyDesc: storyDesc,
+                                                        storyCategory: storyCategory)
                         dismiss()
                     }
                 }

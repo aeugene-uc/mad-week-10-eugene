@@ -58,7 +58,7 @@ struct ProfileView: View {
                             isLoading: seedingId == seed.id) {
                     Task {
                         seedingId = seed.id
-                        await viewModel.seed(storyCategory: seed)
+                        await viewModel.seed(category: seed)
                         seedingId = nil
                     }
                 }
