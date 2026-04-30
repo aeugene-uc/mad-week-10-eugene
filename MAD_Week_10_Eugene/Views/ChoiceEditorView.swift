@@ -9,70 +9,57 @@ import SwiftUI
 
 struct ChoiceEditorView: View {
     let node: StoryNode
+    let storyId: String
     let availableNodes: [StoryNode]
     @ObservedObject var adminViewModel: AdminViewModel
     @Environment(\.dismiss) private var dismiss
-    
-    @State private var options: [StoryChoice]
-    private let storyId: String
-    
-    init(node: StoryNode,
-         storyId: String,
-         availableNodes: [StoryNode],
-         adminViewModel: AdminViewModel) {
-        self.node = node
-        self.storyId = storyId
-        self.availableNodes = availableNodes
-        self.adminViewModel = adminViewModel
-        _options = State(initialValue: node.options)
-    }
-    
+
+    @State private var optionText: String = ""
+    @State private var followingNodeId: String = ""
+    @State private var isSaving: Bool = false
+
     var body: some View {
         NavigationStack {
             Form {
+                Section("Narasi Saat Ini") {
+                    Text(node.storyText)
+                        .font(.system(size: 14))
+                        .foregroundColor(.primary)
+                }
+
                 Section("Pilihan Cabang") {
-                    ForEach($options) { $choice in
-                        VStack(alignment: .leading, spacing: 10) {
-                            TextField("Label pilihan", text: $choice.optionText)
-                                .font(.system(size: 14))
-                            
-                            Picker("Tujuan", selection: $choice.followingNodeId) {
-                                Text("Pilih node tujuan").tag("")
-                                ForEach(availableNodes.filter { $0.id != node.id }) { target in
-                                    Text(String(target.storyText.prefix(40)) + (target.storyText.count > 40 ? "..." : ""))
-                                        .tag(target.id ?? "")
-                                }
-                            }
-                            .pickerStyle(.menu)
+                    TextField("Teks Pilihan (Misal: 'Lari')", text: $optionText)
+                        .font(.system(size: 14))
+
+                    Picker("Pilih Tujuan", selection: $followingNodeId) {
+                        Text("Pilih node tujuan").tag("")
+                        ForEach(availableNodes.filter { $0.id != node.id }) { target in
+                            Text(String(target.storyText.prefix(50)) + (target.storyText.count > 50 ? "..." : ""))
+                                .tag(target.id ?? "")
                         }
-                        .padding(.vertical, 4)
-                    }
-                    .onDelete { offsets in
-                        options.remove(atOffsets: offsets)
-                    }
-                    
-                    Button {
-                        options.append(StoryChoice(optionText: "", followingNodeId: ""))
-                    } label: {
-                        Label("Tambah Cabang", systemImage: "plus.circle")
                     }
                 }
-            }
-            .navigationTitle("Edit Cabang")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Simpan") {
+
+                Section {
+                    Button("Simpan Cabang") {
+                        guard !optionText.trimmingCharacters(in: .whitespaces).isEmpty,
+                              !followingNodeId.isEmpty else { return }
+                        isSaving = true
                         Task {
-                            let validOptions = options.filter { !$0.optionText.isEmpty }
+                            let newChoice = StoryChoice(optionText: optionText, followingNodeId: followingNodeId)
                             var updatedNode = node
-                            updatedNode.options = validOptions
+                            updatedNode.options.append(newChoice)
                             await adminViewModel.saveNode(parentStoryId: storyId, node: updatedNode)
+                            isSaving = false
                             dismiss()
                         }
                     }
+                    .disabled(optionText.trimmingCharacters(in: .whitespaces).isEmpty || followingNodeId.isEmpty || isSaving)
+                    .foregroundColor(optionText.isEmpty || followingNodeId.isEmpty ? .secondary : .blue)
                 }
             }
+            .navigationTitle("Keputusan")
+            .navigationBarTitleDisplayMode(.large)
         }
     }
 }
