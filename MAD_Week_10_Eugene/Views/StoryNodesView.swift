@@ -12,6 +12,7 @@ struct StoryNodesView: View {
     @StateObject private var viewModel = AdminViewModel()
     @State private var showAddNode: Bool = false
     @State private var editingNode: StoryNode?
+    @State private var editingChoicesNode: StoryNode?
     
     var body: some View {
         ScrollView {
@@ -32,8 +33,8 @@ struct StoryNodesView: View {
                         )
                 } else {
                     ForEach(viewModel.nodes) { node in
-                        NodeRow(node: node, onEdit: {
-                            editingNode = node
+                        NodeRow(node: node, onEditChoices: {
+                            editingChoicesNode = node
                         }, onDelete: {
                             if let storyId = story.id, let nodeId = node.id {
                                 Task {
@@ -75,12 +76,12 @@ struct StoryNodesView: View {
                                 adminViewModel: viewModel)
             }
         }
-        .sheet(item: $editingNode) { node in
+        .sheet(item: $editingChoicesNode) { node in
             if let storyId = story.id {
-                NodeEditorView(storyId: storyId,
-                                existingNode: node,
-                                availableNodes: viewModel.nodes,
-                                adminViewModel: viewModel)
+                ChoiceEditorView(node: node,
+                                  storyId: storyId,
+                                  availableNodes: viewModel.nodes,
+                                  adminViewModel: viewModel)
             }
         }
         .onAppear {
@@ -96,7 +97,7 @@ struct StoryNodesView: View {
 
 struct NodeRow: View {
     let node: StoryNode
-    let onEdit: () -> Void
+    let onEditChoices: () -> Void
     let onDelete: () -> Void
     
     var body: some View {
@@ -127,7 +128,7 @@ struct NodeRow: View {
                 }
             }
             
-            Button(action: onEdit) {
+            Button(action: onEditChoices) {
                 HStack {
                     Text("Edit Cabang")
                         .font(.system(size: 13))

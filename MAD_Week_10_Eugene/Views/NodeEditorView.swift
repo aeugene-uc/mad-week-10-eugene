@@ -39,24 +39,6 @@ struct NodeEditorView: View {
                 Section {
                     Toggle("Titik Mulai Cerita", isOn: $viewModel.isStart)
                 }
-                
-                if !viewModel.isEnd {
-                    Section("Pilihan") {
-                        ForEach($viewModel.options) { $choice in
-                            ChoiceEditorRow(choice: $choice,
-                                            availableNodes: viewModel.availableNodes)
-                        }
-                        .onDelete { offsets in
-                            viewModel.removeChoice(at: offsets)
-                        }
-                        
-                        Button {
-                            viewModel.addChoice()
-                        } label: {
-                            Label("Tambah Pilihan", systemImage: "plus.circle")
-                        }
-                    }
-                }
             }
             .navigationTitle(viewModel.existingNode == nil ? "Node Baru" : "Edit Node")
             .navigationBarTitleDisplayMode(.large)
@@ -73,27 +55,5 @@ struct NodeEditorView: View {
                 }
             }
         }
-    }
-}
-
-struct ChoiceEditorRow: View {
-    @Binding var choice: StoryChoice
-    let availableNodes: [StoryNode]
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            TextField("Label pilihan", text: $choice.optionText)
-                .font(.system(size: 14))
-            
-            Picker("Tujuan", selection: $choice.followingNodeId) {
-                Text("Pilih node tujuan").tag("")
-                ForEach(availableNodes) { node in
-                    Text(node.storyText.prefix(40) + (node.storyText.count > 40 ? "..." : ""))
-                        .tag(node.id ?? "")
-                }
-            }
-            .pickerStyle(.menu)
-        }
-        .padding(.vertical, 4)
     }
 }
