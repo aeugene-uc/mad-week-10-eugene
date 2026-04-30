@@ -28,7 +28,7 @@ struct StoryChoice: Identifiable, Codable, Hashable {
 }
 
 struct StoryNode: Identifiable, Codable, Hashable {
-    @DocumentID var id: String?
+    var id: String?
     var parentStoryId: String
     var storyText: String
     var options: [StoryChoice]
@@ -37,7 +37,6 @@ struct StoryNode: Identifiable, Codable, Hashable {
     var timestamp: Date
     
     enum CodingKeys: String, CodingKey {
-        case id
         case parentStoryId = "storyId"
         case storyText = "narrative"
         case options = "choices"

@@ -31,7 +31,11 @@ class AdminViewModel: ObservableObject {
                         return
                     }
                     guard let documents = snapshot?.documents else { return }
-                    self.stories = documents.compactMap { try? $0.data(as: Story.self) }
+                    self.stories = documents.compactMap { doc -> Story? in
+                        guard var story = try? doc.data(as: Story.self) else { return nil }
+                        story.id = doc.documentID
+                        return story
+                    }
                 }
             }
     }
@@ -55,7 +59,11 @@ class AdminViewModel: ObservableObject {
                         return
                     }
                     guard let documents = snapshot?.documents else { return }
-                    self.nodes = documents.compactMap { try? $0.data(as: StoryNode.self) }
+                    self.nodes = documents.compactMap { doc -> StoryNode? in
+                        guard var node = try? doc.data(as: StoryNode.self) else { return nil }
+                        node.id = doc.documentID
+                        return node
+                    }
                 }
             }
     }

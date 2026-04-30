@@ -40,7 +40,9 @@ class GameViewModel: ObservableObject {
                     .document(entryId)
                     .getDocument()
                 if snapshot.exists {
-                    currentNode = try snapshot.data(as: StoryNode.self)
+                    var node = try snapshot.data(as: StoryNode.self)
+                    node.id = snapshot.documentID
+                    currentNode = node
                     isLoading = false
                     return
                 }
@@ -54,7 +56,9 @@ class GameViewModel: ObservableObject {
                 .getDocuments()
             
             if let doc = snapshot.documents.first {
-                currentNode = try doc.data(as: StoryNode.self)
+                var node = try doc.data(as: StoryNode.self)
+                node.id = doc.documentID
+                currentNode = node
             } else {
                 errorMessage = "No entry point set for this story"
             }
@@ -75,7 +79,8 @@ class GameViewModel: ObservableObject {
                 .getDocument()
             
             if snapshot.exists {
-                let next = try snapshot.data(as: StoryNode.self)
+                var next = try snapshot.data(as: StoryNode.self)
+                next.id = snapshot.documentID
                 currentNode = next
                 if next.options.isEmpty || next.isEnd {
                     isFinished = true

@@ -31,7 +31,11 @@ class StoriesViewModel: ObservableObject {
                         return
                     }
                     guard let documents = snapshot?.documents else { return }
-                    self.stories = documents.compactMap { try? $0.data(as: Story.self) }
+                    self.stories = documents.compactMap { doc -> Story? in
+                        guard var story = try? doc.data(as: Story.self) else { return nil }
+                        story.id = doc.documentID
+                        return story
+                    }
                 }
             }
     }

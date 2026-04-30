@@ -9,14 +9,13 @@ import Foundation
 import FirebaseFirestore
 
 struct Story: Identifiable, Codable, Hashable {
-    @DocumentID var id: String?
+    var id: String?
     var storyTitle: String
     var storyDesc: String
     var startNodeId: String?
     var timestamp: Date
     
     enum CodingKeys: String, CodingKey {
-        case id
         case storyTitle = "title"
         case storyDesc = "description"
         case startNodeId = "entryNodeId"
