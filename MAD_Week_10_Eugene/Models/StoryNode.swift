@@ -37,6 +37,7 @@ struct StoryNode: Identifiable, Codable, Hashable {
     var timestamp: Date
     
     enum CodingKeys: String, CodingKey {
+        case id
         case parentStoryId = "storyId"
         case storyText = "narrative"
         case options = "choices"
