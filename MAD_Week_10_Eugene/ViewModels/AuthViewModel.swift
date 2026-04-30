@@ -30,21 +30,6 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    private func setupAuthListener() {
-        authHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
-            Task { @MainActor in
-                guard let self else { return }
-                if let user {
-                    self.isAuthenticated = true
-                    await self.fetchUserProfile(uid: user.uid)
-                } else {
-                    self.isAuthenticated = false
-                    self.currentUser = nil
-                }
-            }
-        }
-    }
-    
     func login(userEmail: String, password: String) async {
         isLoading = true
         errorMessage = nil
@@ -83,6 +68,18 @@ class AuthViewModel: ObservableObject {
         }
     }
     
+    func markStoryCompleted(storyId: String) async {
+        guard let uid = currentUser?.id else { return }
+        do {
+            try await db.collection("users").document(uid).updateData([
+                "completedStories": FieldValue.arrayUnion([storyId])
+            ])
+            await fetchUserProfile(uid: uid)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+    
     private func fetchUserProfile(uid: String) async {
         do {
             let snapshot = try await db.collection("users").document(uid).getDocument()
@@ -100,15 +97,22 @@ class AuthViewModel: ObservableObject {
         }
     }
     
-    func markStoryCompleted(storyId: String) async {
-        guard let uid = currentUser?.id else { return }
-        do {
-            try await db.collection("users").document(uid).updateData([
-                "completedStories": FieldValue.arrayUnion([storyId])
-            ])
-            await fetchUserProfile(uid: uid)
-        } catch {
-            errorMessage = error.localizedDescription
+    private func setupAuthListener() {
+        authHandle = Auth.auth().addStateDidChangeListener { [weak self] _, user in
+            Task { @MainActor in
+                guard let self else { return }
+                if let user {
+                    self.isAuthenticated = true
+                    await self.fetchAuthListenerProfile(uid: user.uid)
+                } else {
+                    self.isAuthenticated = false
+                    self.currentUser = nil
+                }
+            }
         }
+    }
+    
+    private func fetchAuthListenerProfile(uid: String) async {
+        await fetchUserProfile(uid: uid)
     }
 }
