@@ -12,14 +12,12 @@ struct Story: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     var storyTitle: String
     var storyDesc: String
-    var storyCategory: String
     var startNodeId: String?
     var timestamp: Date
     
     enum CodingKeys: String, CodingKey {
         case storyTitle = "title"
         case storyDesc = "description"
-        case storyCategory = "category"
         case startNodeId = "entryNodeId"
         case timestamp = "createdAt"
     }
@@ -27,13 +25,11 @@ struct Story: Identifiable, Codable, Hashable {
     init(id: String? = nil,
          storyTitle: String,
          storyDesc: String,
-         storyCategory: String = "general",
          startNodeId: String? = nil,
          timestamp: Date = Date()) {
         self.id = id
         self.storyTitle = storyTitle
         self.storyDesc = storyDesc
-        self.storyCategory = storyCategory
         self.startNodeId = startNodeId
         self.timestamp = timestamp
     }

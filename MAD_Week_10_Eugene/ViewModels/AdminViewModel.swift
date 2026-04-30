@@ -66,9 +66,9 @@ class AdminViewModel: ObservableObject {
         nodes = []
     }
     
-    func createStory(storyTitle: String, storyDesc: String, storyCategory: String = "general") async -> Story? {
+    func createStory(storyTitle: String, storyDesc: String) async -> Story? {
         do {
-            let newStory = Story(storyTitle: storyTitle, storyDesc: storyDesc, storyCategory: storyCategory)
+            let newStory = Story(storyTitle: storyTitle, storyDesc: storyDesc)
             let ref = try db.collection("stories").addDocument(from: newStory)
             var saved = newStory
             saved.id = ref.documentID

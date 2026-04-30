@@ -12,33 +12,27 @@ struct CreateStoryView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var storyTitle: String = ""
     @State private var storyDesc: String = ""
-    @State private var storyCategory: String = "general"
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                AppTextFieldView(placeholder: "Judul Cerita", text: $storyTitle, autocapitalization: .words)
-                AppTextFieldView(placeholder: "Deskripsi", text: $storyDesc, autocapitalization: .sentences)
-                AppTextFieldView(placeholder: "Kategori (opsional)", text: $storyCategory)
-                
-                PrimaryButtonView(text: "Simpan Cerita",
-                              isEnabled: !storyTitle.isEmpty && !storyDesc.isEmpty) {
-                    Task {
-                        _ = await viewModel.createStory(storyTitle: storyTitle,
-                                                        storyDesc: storyDesc,
-                                                        storyCategory: storyCategory)
-                        dismiss()
-                    }
+            Form {
+                Section("Detail") {
+                    TextField("Judul", text: $storyTitle)
+                    TextField("Ringkasan", text: $storyDesc)
                 }
-                
-                Spacer()
             }
-            .padding(22)
-            .navigationTitle("Cerita Baru")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("Draft Cerita")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Batal") { dismiss() }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Simpan") {
+                        Task {
+                            _ = await viewModel.createStory(storyTitle: storyTitle,
+                                                            storyDesc: storyDesc)
+                            dismiss()
+                        }
+                    }
+                    .disabled(storyTitle.isEmpty || storyDesc.isEmpty)
                 }
             }
         }

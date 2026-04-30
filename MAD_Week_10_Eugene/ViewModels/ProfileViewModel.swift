@@ -77,22 +77,19 @@ class ProfileViewModel: ObservableObject {
     
     private func seedPirate() async throws {
         let story = Story(storyTitle: "Tekad Sang Kapten",
-                          storyDesc: "Perjalanan Dylan mencari harta karun samudra dengan kru yang kuat.",
-                          storyCategory: "pirate")
+                          storyDesc: "Perjalanan Dylan mencari harta karun samudra dengan kru yang kuat.")
         try await seedStory(story: story, nodes: pirateNodes())
     }
     
     private func seedNinja() async throws {
         let story = Story(storyTitle: "Jalan Ninja",
-                          storyDesc: "Ian harus memilih jalannya sendiri sebagai ninja desa tersembunyi.",
-                          storyCategory: "ninja")
+                          storyDesc: "Ian harus memilih jalannya sendiri sebagai ninja desa tersembunyi.")
         try await seedStory(story: story, nodes: ninjaNodes())
     }
     
     private func seedRomance() async throws {
         let story = Story(storyTitle: "Sakura Terakhir",
-                          storyDesc: "Kisah cinta Gavin di musim semi sekolah menengah.",
-                          storyCategory: "romance")
+                          storyDesc: "Kisah cinta Gavin di musim semi sekolah menengah.")
         try await seedStory(story: story, nodes: romanceNodes())
     }
     
