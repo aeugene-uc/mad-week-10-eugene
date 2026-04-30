@@ -18,7 +18,7 @@ class StoryNodeViewModel: ObservableObject {
     @Published var availableNodes: [StoryNode] = []
     
     private let storyId: String
-    private let existingNode: StoryNode?
+    let existingNode: StoryNode?
     
     init(storyId: String, existingNode: StoryNode? = nil, availableNodes: [StoryNode] = []) {
         self.storyId = storyId

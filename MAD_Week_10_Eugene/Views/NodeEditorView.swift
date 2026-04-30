@@ -30,15 +30,14 @@ struct NodeEditorView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Pengaturan") {
-                    Toggle("Main Entry Point", isOn: $viewModel.isStart)
-                    Toggle("Akhir Cerita", isOn: $viewModel.isEnd)
-                }
-                
-                Section("Narasi") {
+                Section("Teks Narasi") {
                     TextEditor(text: $viewModel.storyText)
                         .frame(minHeight: 120)
                         .font(.system(size: 14))
+                }
+                
+                Section {
+                    Toggle("Titik Mulai Cerita", isOn: $viewModel.isStart)
                 }
                 
                 if !viewModel.isEnd {
@@ -54,17 +53,14 @@ struct NodeEditorView: View {
                         Button {
                             viewModel.addChoice()
                         } label: {
-                            Label("Add Choice", systemImage: "plus.circle")
+                            Label("Tambah Pilihan", systemImage: "plus.circle")
                         }
                     }
                 }
             }
-            .navigationTitle("Editor Node")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle(viewModel.existingNode == nil ? "Node Baru" : "Edit Node")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Batal") { dismiss() }
-                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Simpan") {
                         Task {

@@ -14,31 +14,59 @@ struct StoryNodesView: View {
     @State private var editingNode: StoryNode?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            headerSection
-            
-            if viewModel.nodes.isEmpty {
-                emptyState
-            } else {
-                nodeList
-            }
-            
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 8)
-        .navigationTitle(story.storyTitle)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Struktur Cerita")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(.secondary)
+                
+                if viewModel.nodes.isEmpty {
+                    Text("Gunakan tombol + di bawah.")
+                        .font(.system(size: 14))
+                        .foregroundColor(.secondary)
+                        .padding(14)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(Color(.systemGray6))
+                        )
+                } else {
+                    ForEach(viewModel.nodes) { node in
+                        NodeRow(node: node, onEdit: {
+                            editingNode = node
+                        }, onDelete: {
+                            if let storyId = story.id, let nodeId = node.id {
+                                Task {
+                                    await viewModel.deleteNode(storyId: storyId, nodeId: nodeId)
+                                }
+                            }
+                        })
+                    }
+                }
+                
                 Button {
                     showAddNode = true
                 } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 18, weight: .semibold))
+                    HStack {
+                        Image(systemName: "plus.circle")
+                            .font(.system(size: 20))
+                        Text("Tambah Pilihan")
+                            .font(.system(size: 15, weight: .medium))
+                    }
+                    .foregroundColor(.primary)
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(.systemGray6))
+                    )
                 }
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
         }
+        .navigationTitle(story.storyTitle)
+        .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showAddNode) {
             if let storyId = story.id {
                 NodeEditorView(storyId: storyId,
@@ -64,82 +92,52 @@ struct StoryNodesView: View {
             viewModel.stopListeningNodes()
         }
     }
-    
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Node Cerita")
-                .font(.system(size: 13, weight: .bold))
-                .foregroundColor(.secondary)
-            Text(story.storyDesc)
-                .font(.system(size: 12))
-                .foregroundColor(.secondary)
-        }
-    }
-    
-    private var nodeList: some View {
-        ScrollView {
-            LazyVStack(spacing: 14) {
-                ForEach(viewModel.nodes) { node in
-                    Button {
-                        editingNode = node
-                    } label: {
-                        NodeRow(node: node)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-    }
-    
-    private var emptyState: some View {
-        VStack(spacing: 12) {
-            Text("Belum ada node")
-                .font(.system(size: 14))
-                .foregroundColor(.secondary)
-            Text("Tambah node pertama sebagai entry point")
-                .font(.system(size: 12))
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 60)
-    }
 }
 
 struct NodeRow: View {
     let node: StoryNode
+    let onEdit: () -> Void
+    let onDelete: () -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
-                if node.isStart {
-                    Label("Entry", systemImage: "flag.fill")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Color.green)
-                        .cornerRadius(4)
-                }
-                if node.isEnd {
-                    Text("Ending")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Color.purple)
-                        .cornerRadius(4)
-                }
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
+                Text(node.storyText)
+                    .font(.system(size: 14))
+                    .foregroundColor(.primary)
+                    .lineLimit(3)
+                    .multilineTextAlignment(.leading)
+                
                 Spacer()
-                Text("\(node.options.count) pilihan")
-                    .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                
+                if node.isStart {
+                    Text("MULAI")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.black)
+                        .cornerRadius(4)
+                }
+                
+                Button(action: onDelete) {
+                    Image(systemName: "trash")
+                        .font(.system(size: 14))
+                        .foregroundColor(.pink)
+                }
             }
             
-            Text(node.storyText)
-                .font(.system(size: 13))
-                .foregroundColor(.primary)
-                .lineLimit(3)
-                .multilineTextAlignment(.leading)
+            Button(action: onEdit) {
+                HStack {
+                    Text("Edit Cabang")
+                        .font(.system(size: 13))
+                        .foregroundColor(.blue)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                }
+            }
         }
         .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
